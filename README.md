@@ -53,3 +53,52 @@ def predict(filename):
     result = model.predict(current_vector.reshape(1, -1))  # 预测结果
     return '垃圾邮件' if result == 1 else '普通邮件'
 ```
+# 高频词/TF-IDF两种特征模式及其切换方法
+## 高频词特征模式
+### 使用词袋模型
+**使用`CountVectorizer`来提取文本中的词频特征。`CountVectorizer`会将文本转换为词频矩阵，其中每个词的频率表示其在文档中出现的次数。**
+```python
+from sklearn.feature_extraction.text import CountVectorizer
+
+corpus = ["The quick brown fox jumps over the lazy dog.", "The quick brown fox is fast."]
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(corpus)
+print(vectorizer.get_feature_names())
+print(X.toarray())
+```
+## TF-IDF特征模式
+### 使用TF-IDF模型
+**使用`TfidfVectorizer`直接将文本转换为TF-IDF特征矩阵。`TfidfVectorizer`结合了词频（TF）和逆文档频率（IDF），能够更好地反映词在文档中的重要性。**
+```python
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+corpus = ["The quick brown fox jumps over the lazy dog.", "The quick brown fox is fast."]
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(corpus)
+print(vectorizer.get_feature_names())
+print(X.toarray())
+```
+## 转换方法
+### 从高频词切换到TF-IDF
+**如果已经使用`CountVectorizer`提取了词频特征，可以通过`TfidfTransformer`将其转换为TF-IDF特征：**
+```python
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+
+corpus = ["The quick brown fox jumps over the lazy dog.", "The quick brown fox is fast."]
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(corpus)
+transformer = TfidfTransformer()
+tfidf = transformer.fit_transform(X)
+print(tfidf.toarray())
+```
+### 从TF-IDF切换到高频词
+**如果已经使用`TfidfVectorizer`提取了TF-IDF特征，可以通过`CountVectorizer`重新提取词频特征**
+```python
+from sklearn.feature_extraction.text import CountVectorizer
+
+corpus = ["The quick brown fox jumps over the lazy dog.", "The quick brown fox is fast."]
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(corpus)
+print(X.toarray())
+```
